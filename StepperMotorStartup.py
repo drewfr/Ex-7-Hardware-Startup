@@ -6,6 +6,7 @@ from pidev.stepper import stepper
 from Slush.Devices import L6470Registers
 spi = spidev.SpiDev()
 
+
 # Init a 200 steps per revolution stepper on Port 0
 s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
              steps_per_unit=200, speed=8)
@@ -139,7 +140,7 @@ s1.setSlope(0x562, 0x010, 0x01F, 0x01F)
 s1.setParam(L6470Registers.CONFIG, 0x3688)
 s1.free()
 
-# Now try using the s1 instance to move it back and forth, and back to hose as you did with the s0 instance.
+# Now try using the s1 instance to move it back and forth, and back to home as you did with the s0 instance.
 
 # Now it is time to try initializing additional instances of the stepper.
 # For example try creating stepper instance s2
