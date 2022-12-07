@@ -1,0 +1,50 @@
+<MainScreen>:
+    name: "main"
+
+
+    FloatLayout:
+        size_hint: None, None
+
+    DPEAButton:
+        id: btn2
+        text: "ON"
+        size: 100, 100
+        x: root.width * 0.75
+        y: root.height * 0.75
+        color: 0, 1, 0, 1
+        on_press: root.motor_on()
+
+    DPEAButton:
+        id: btn3
+        text: "OFF"
+        size: 100, 100
+        x: root.width * 0.65
+        y: root.height * 0.75
+        color: 0, 1, 0, 1
+        on_press: root.motor_off()
+
+
+    DPEAButton:
+        id: btn4
+        text: "CHANGE DIRECTION"
+        size: 100, 100
+        x: root.width * 0.25
+        y: root.height * 0.75
+        color: 0, 1, 0, 1
+        on_press: root.change_motor_direction()
+
+    Slider:
+        id:slidervalue
+        center_y: root.height * -0.20
+        min: 50
+        max: 6400
+        step: 50
+        orientation: "horizontal"
+        text: "SPEED"
+        sensitivity: 'handle'
+        on_value:root.sliderfunction(*args)
+
+
+
+
+
