@@ -1,6 +1,8 @@
 <MainScreen>:
     name: "main"
 
+    lb1: label1
+
 
     FloatLayout:
         size_hint: None, None
@@ -43,6 +45,18 @@
         text: "SPEED"
         sensitivity: 'handle'
         on_value:root.sliderfunction(*args)
+
+
+    DPEAButton:
+        id: btn5
+        text: "Big Steppa"
+        size: 100, 100
+        x: root.width * 0.5
+        y: root.height * 0.5
+        color: 1, 0, 1, 1
+        on_press: root.motor_show()
+
+
 
 
 

@@ -70,6 +70,41 @@ class MainScreen(Screen):
         s0.softStop()
         s0.free()
 
+
+    def motor_show(self):
+
+        s0.free()
+        s0.set_as_home()
+        sleep(.1)
+        print(str(s0.get_position_in_units()))
+
+        s0.start_relative_move(15)
+        s0.wait_move_finish()
+        print(str(s0.get_position_in_units()))
+
+        sleep(10)
+        s0.start_relative_move(10)
+        print(str(s0.get_position_in_units()))
+
+        sleep(8)
+        s0.goHome()
+        sleep(30)
+        print(str(s0.get_position_in_units()))
+
+        s0.start_relative_move(-100)
+        print(str(s0.get_position_in_units()))
+
+        sleep(10)
+        s0.goHome()
+        print(str(s0.get_position_in_units()))
+
+        s0.free()
+        print("dance over")
+
+
+
+
+
     def sliderfunction(self, *args):
 
         if s0.is_busy():
