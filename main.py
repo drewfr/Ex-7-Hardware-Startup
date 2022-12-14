@@ -1,9 +1,10 @@
 import os
 import spidev
+import RPi.GPIO as GPIO
 
 from datetime import datetime
 from time import sleep
-from threading import Thread
+
 
 #os.environ['DISPLAY'] = ":0.0"
 #os.environ['KIVY_WINDOW'] = 'egl_rpi'
@@ -21,12 +22,9 @@ from pidev.kivy.PassCodeScreen import PassCodeScreen
 from pidev.kivy.PauseScreen import PauseScreen
 from pidev.kivy import DPEAButton
 from pidev.kivy import ImageButton
-from pidev.kivy.selfupdatinglabel import SelfUpdatingLabel
+
 
 from Slush.Devices import L6470Registers
-
-s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
-    steps_per_unit=200, speed=8)
 
 time = datetime
 spi = spidev.SpiDev()
@@ -54,28 +52,58 @@ class ProjectNameGUI(App):
 
 Window.clearcolor = (1, 1, 1, 1)  # White
 
+s0 = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
+             steps_per_unit=200, speed=2)
+
+
 class MainScreen(Screen):
     """
     Class to handle the main screen and its associated touch events
     """
     s0_rotation_direction = 0
+    clock_control = 0
+    position = ObjectProperty()
+
     def __init__(self, **kw):
         super().__init__(**kw)
+        """Things that are actually happening when the MainScreen class is called
+        These variables are only defined here so they can be altered later.
+        s0_rotation_dierction controls the rotation direction and stays between 1 and 0.
+        clock_control helps control the clock, as if the_dance() has been called the variable should update
+        and cancel the clock until the value is returned to 0, which the_dance function does when it is finished running
+        """
 
-
+        Clock.schedule_interval(self.speed_change, 0.5)
+        Clock.schedule_interval(self.position_update, 0.5)
     def motor_on(self):
-        s0.go_until_press(0, self.ids.slidervalue.value)
+        if not s0.is_busy():
+            s0.go_until_press(self.s0_rotation_direction, self.ids.slidervalue.value)
+            print("moving!")
+
+        else:
+            s0.free()
+            print("s0: I'm free!!")
+
 
     def motor_off(self):
         s0.softStop()
         s0.free()
 
+    def position_update(self, dt):
+
+        self.position = float(s0.get_position_in_units())
+
+    def speed_change(self, dt):
+        if self.clock_control == 0:
+            if s0.is_busy():
+                s0.go_until_press(self.s0_rotation_direction, self.ids.speed_slider.value)
 
     def motor_show(self):
 
         s0.free()
         s0.set_as_home()
         sleep(.1)
+        self.clock_control += 1
         print(str(s0.get_position_in_units()))
 
         s0.start_relative_move(15)
@@ -99,16 +127,9 @@ class MainScreen(Screen):
         print(str(s0.get_position_in_units()))
 
         s0.free()
-        print("dance over")
+        self.clock_control -= 1
+        print("THE END")
 
-
-
-
-
-    def sliderfunction(self, *args):
-
-        if s0.is_busy():
-            s0.go_until_press(self.s0_rotation_direction, self.ids.slidervalue.value)
 
     def change_motor_direction(self):
 
@@ -123,20 +144,8 @@ class MainScreen(Screen):
 
             s0.go_until_press(self.s0_rotation_direction, self.ids.slidervalue.value)
 
-    def pressed(self):
-        """
-        Function called on button touch event for button with id: testButton
-        :return: None
-        """
-        print("Callback from MainScreen.pressed()")
 
-    def admin_action(self):
-        """
-        Hidden admin button touch event. Transitions to passCodeScreen.
-        This method is called from pidev/kivy/PassCodeScreen.kv
-        :return: None
-        """
-        SCREEN_MANAGER.current = 'passCode'
+
 
 class AdminScreen(Screen):
     """
@@ -196,6 +205,7 @@ SCREEN_MANAGER.add_widget(AdminScreen(name=ADMIN_SCREEN_NAME))
 """
 MixPanel
 """
+
 
 def send_event(event_name):
     """

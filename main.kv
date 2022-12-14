@@ -1,9 +1,7 @@
 <MainScreen>:
-    name: "main"
+    #: import time __main__.time
 
-    lb1: label1
-
-
+    name: 'main'
     FloatLayout:
         size_hint: None, None
 
@@ -44,7 +42,6 @@
         orientation: "horizontal"
         text: "SPEED"
         sensitivity: 'handle'
-        on_value:root.sliderfunction(*args)
 
 
     DPEAButton:
@@ -55,6 +52,7 @@
         y: root.height * 0.5
         color: 1, 0, 1, 1
         on_press: root.motor_show()
+
 
 
 
